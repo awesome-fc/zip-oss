@@ -1,0 +1,22 @@
+ROSTemplateFormatVersion: '2015-09-01'
+Transform: 'Aliyun::Serverless-2018-04-03'
+Resources:
+  zip-service:
+    Type: 'Aliyun::Serverless::Service'
+    Properties:
+      Policies:
+        - AliyunOSSFullAccess
+      Description: 'zip oss sample'
+    zip-oss:
+      Type: 'Aliyun::Serverless::Function'
+      Properties:
+        Handler: main.main_handler
+        Runtime: python2.7
+        CodeUri: './'
+        Timeout: 600
+      Events:
+        http-test: # trigger name
+          Type: HTTP # http trigger
+          Properties:
+              AuthType: ANONYMOUS
+              Methods: ['GET', 'POST', 'PUT']

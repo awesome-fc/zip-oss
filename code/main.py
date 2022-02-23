@@ -16,6 +16,8 @@ LOG = logging.getLogger()
 # FC handler
 # event: the config, see event.json for example
 # return: the signed url of the zip file
+
+
 def main_handler(environ, start_response):
     LOG.info('event: %s', environ)
     try:
@@ -31,10 +33,11 @@ def main_handler(environ, start_response):
     ret = _main_handler(oss_client, evt, context)
 
     status = '302 FOUND'
-    response_headers = [('Location',sign_url(oss_client, ret))]
+    response_headers = [('Location', sign_url(oss_client, ret))]
     start_response(status, response_headers)
 
     return "ok"
+
 
 def _main_handler(oss_client, evt, context):
     source_dir = evt.has_key('source-dir') and evt['source-dir']
@@ -45,13 +48,17 @@ def _main_handler(oss_client, evt, context):
 
     return zip_files(oss_client, source_dir, source_files, dest_file)
 
+
 def get_oss_client(evt, context):
     region = evt['region']
     bucket = evt['bucket']
     creds = context.credentials
-    auth = oss2.StsAuth(creds.accessKeyId, creds.accessKeySecret, creds.securityToken)
-    oss_client = oss2.Bucket(auth, 'oss-' + region + '-internal.aliyuncs.com', bucket)
+    auth = oss2.StsAuth(creds.accessKeyId,
+                        creds.accessKeySecret, creds.securityToken)
+    oss_client = oss2.Bucket(auth, 'oss-' + region +
+                             '-internal.aliyuncs.com', bucket)
     return oss_client
+
 
 def sign_url(oss_client, key, content_type=''):
     LOG.info('sign url, key: %s, content type: %s', key, content_type)
@@ -65,6 +72,8 @@ def sign_url(oss_client, key, content_type=''):
 # streaming: the source files are added in stream, no local files are needed
 # concurrency: the output zip file is buffer in memory, it buffers at
 # most 8MB data and uploads to OSS concurrently by 8 threads
+
+
 def zip_files(oss_client, source_dir, source_files, dest_file):
     LOG.info('create zip, source_dir: %s, source_files: %s, dest_file: %s',
              source_dir, source_files, dest_file)
@@ -77,7 +86,8 @@ def zip_files(oss_client, source_dir, source_files, dest_file):
         if key[-1] == '/':
             return
         obj = oss_client.get_object(key)
-        zip_file.write_file(key[len(source_dir):], obj, compress_type=zipfile.ZIP_STORED)
+        zip_file.write_file(key[len(source_dir):], obj,
+                            compress_type=zipfile.ZIP_STORED)
 
     def producer(queue):
         mem_buf = MemBuffer(queue)
@@ -90,12 +100,14 @@ def zip_files(oss_client, source_dir, source_files, dest_file):
             for obj in oss2.ObjectIterator(oss_client, prefix=source_dir):
                 zip_add_file(zip_file, obj.key)
         else:
-            raise Exception('either `source_files` or `source_dir` must be speicified')
+            raise Exception(
+                'either `source_files` or `source_dir` must be speicified')
 
         zip_file.close()
         mem_buf.flush_buffer()
 
     parts = []
+
     def consumer(queue):
         while queue.ok():
             item = queue.get()
@@ -103,7 +115,8 @@ def zip_files(oss_client, source_dir, source_files, dest_file):
                 break
 
             part_no, part_data = item
-            res = oss_client.upload_part(dest_file, upload_id, part_no, part_data)
+            res = oss_client.upload_part(
+                dest_file, upload_id, part_no, part_data)
             parts.append(PartInfo(part_no, res.etag))
 
     task_q = TaskQueue(producer, [consumer] * 16)
@@ -114,6 +127,7 @@ def zip_files(oss_client, source_dir, source_files, dest_file):
     LOG.info('create zip, cost: %s secs', end_time-start_time)
 
     return dest_file
+
 
 if __name__ == '__main__':
     pass

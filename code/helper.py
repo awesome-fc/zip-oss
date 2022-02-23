@@ -3,6 +3,7 @@ from zipfile import ZipInfo
 import zlib
 import time
 
+
 class MemBuffer(object):
     def __init__(self, queue, block_size=8*1024*1024):
         self._count = 0
@@ -35,6 +36,7 @@ class MemBuffer(object):
         self._queue.put((self._part_no, self._buffer))
         self._buffer = ''
 
+
 class StreamZipFile(zipfile.ZipFile):
     def write_file(self, zinfo_or_arcname, file_object, compress_type=None):
         if not isinstance(zinfo_or_arcname, ZipInfo):
@@ -49,7 +51,7 @@ class StreamZipFile(zipfile.ZipFile):
                 zinfo.external_attr = 0o600 << 16     # ?rw-------
         else:
             zinfo = zinfo_or_arcname
-        zinfo.flag_bits |= 0x08 # we will write a data descriptor
+        zinfo.flag_bits |= 0x08  # we will write a data descriptor
 
         if not self.fp:
             raise RuntimeError(
@@ -61,7 +63,7 @@ class StreamZipFile(zipfile.ZipFile):
             zinfo.compress_type = zipfile.ZIP_DEFLATED
 
         zinfo.file_size = file_size = 0      # Uncompressed size
-        zinfo.header_offset = self.fp.tell() # Start of header bytes
+        zinfo.header_offset = self.fp.tell()  # Start of header bytes
 
         self._writecheck(zinfo)
         self._didModify = True
@@ -69,7 +71,8 @@ class StreamZipFile(zipfile.ZipFile):
         zinfo.compress_size = compress_size = 0
         self.fp.write(zinfo.FileHeader())
         if zinfo.compress_type == zipfile.ZIP_DEFLATED:
-            cmpr = zlib.compressobj(zlib.Z_DEFAULT_COMPRESSION, zlib.DEFLATED, -15)
+            cmpr = zlib.compressobj(
+                zlib.Z_DEFAULT_COMPRESSION, zlib.DEFLATED, -15)
         else:
             cmpr = None
 

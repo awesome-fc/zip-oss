@@ -1,0 +1,34 @@
+edition: 1.0.0
+name: transform_fun
+access: default
+vars:
+  region: cn-shanghai
+services:
+  fc-zip-service-zip-oss:
+    component: devsapp/fc
+    props:
+      region: ${vars.region}
+      service:
+        name: zip-service
+        description: zip oss sample
+        role:
+          name: fcossrole
+          policies:
+            - AliyunOSSFullAccess
+        internetAccess: true
+      function:
+        name: zip-oss
+        handler: main.main_handler
+        timeout: 900
+        runtime: python2.7
+        codeUri: ./code
+        memorySize: 3072
+      triggers:
+        - name: http-test
+          type: http
+          config:
+            authType: anonymous
+            methods:
+              - GET
+              - POST
+              - PUT

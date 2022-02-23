@@ -27,18 +27,15 @@ git clone https://github.com/awesome-fc/zip-oss.git
 
 如果没有安装 git， 可以直接在浏览器输入 `https://codeload.github.com/awesome-fc/zip-oss/zip/master` 下载代码 zip 包
 
-### 2. 安装最新版本的 funcraft
+### 2. 安装最新版本的 Serverless Devs Tool
 
-[funcraft 安装配置指引](https://github.com/alibaba/funcraft/blob/master/docs/usage/installation-zh.md)
+- [安装 Serverless Devs Tool](https://help.aliyun.com/document_detail/195474.html)
 
-在使用 funcraft 前，我们需要先进行配置，通过键入 fun config，然后按照提示，依次配置 Account ID、Access Key Id、Secret Access Key、 Default Region Name 即可
+- [配置](https://help.aliyun.com/document_detail/295894.html)
 
-![](https://img.alicdn.com/tfs/TB13NI.xVP7gK0jSZFjXXc5aXXa-1699-379.png)
+### 3. 部署函数， 执行 `s deploy`， 部署成功后如下图所示：
 
-
-### 3. 部署函数， 执行 `fun deploy`
-
-![](https://img.alicdn.com/tfs/TB1ONJpyeH2gK0jSZFEXXcqMpXa-2462-712.png)
+![](https://img.alicdn.com/imgextra/i3/O1CN015spfAO1wBi4Wp8ezs_!!6000000006270-2-tps-887-250.png)
 
 
 ### 4. 调用函数
@@ -51,13 +48,13 @@ git clone https://github.com/awesome-fc/zip-oss.git
 ```bash
 cat <<EOF > event.json
 {
-  "region": "cn-hangzhou",
+  "region": "cn-shanghai",
   "bucket": "fc-test-tianlong-wu",
   "source-dir": "files/"
 }
 EOF
 
-curl -v -L -o /tmp/my.zip -d @./event.json https://123456789.cn-hangzhou.fc.aliyuncs.com/2016-08-15/proxy/zip-service/zip-oss/
+curl -v -L -o /tmp/my.zip -d @./event.json https://123456789.cn-shanghai.fc.aliyuncs.com/2016-08-15/proxy/zip-service/zip-oss/
 ```
 
 打开`/tmp/my.zip`，就是`files/`目录下所有文件的压缩包。

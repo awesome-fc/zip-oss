@@ -1,5 +1,5 @@
 {
-  "region": "cn-beijing",
-  "bucket": "test-unzip2",
-  "source-dir": "test/"
+  "region": "cn-shanghai",
+  "bucket": "test-file-mgr",
+  "source-dir": "a/"
 }
